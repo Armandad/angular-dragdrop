@@ -1,0 +1,21 @@
+{
+  "name": "slot-engine",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "dev:server": "turbo run dev --filter=game-server",
+    "dev:client": "turbo run dev --filter=game-client",
+    "simulate": "turbo run simulate --filter=rtp-simulator"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
+  }
+}

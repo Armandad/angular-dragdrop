@@ -1,0 +1,10 @@
+{
+  "name": "@slot-engine/game-defs",
+  "version": "1.0.0",
+  "private": true,
+  "main": "games",
+  "scripts": {
+    "build": "echo 'JSON only — no build needed'",
+    "test": "echo 'JSON only — no tests'"
+  }
+}

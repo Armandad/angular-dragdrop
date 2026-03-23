@@ -1,0 +1,22 @@
+{
+  "name": "@slot-engine/game-server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/main.js",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "dependencies": {
+    "@slot-engine/math-engine": "*",
+    "@slot-engine/shared-types": "*",
+    "@slot-engine/crypto-utils": "*",
+    "@slot-engine/game-defs": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}

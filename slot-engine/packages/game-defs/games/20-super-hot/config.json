@@ -1,0 +1,21 @@
+{
+  "gameId": "20-super-hot",
+  "name": "20 Super Hot",
+  "reelCount": 5,
+  "rowCount": 3,
+  "paylineCount": 20,
+  "denominations": [1, 2, 5, 10, 20, 50, 100],
+  "defaultDenomination": 1,
+  "minBetLines": 1,
+  "maxBetLines": 20,
+  "features": {
+    "gamble": {
+      "maxAttempts": 5,
+      "multiplier": 2,
+      "maxWinMultiple": 5000
+    },
+    "expandingWilds": false,
+    "scatterPay": true
+  },
+  "rtpTargets": [95, 96, 97]
+}
