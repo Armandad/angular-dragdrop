@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  game-server:
+    build:
+      context: .
+      dockerfile: apps/game-server/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://slotengine:slotengine@postgres:5432/slotengine
+    depends_on:
+      - redis
+      - postgres
+
+  game-client:
+    build:
+      context: .
+      dockerfile: apps/game-client/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - game-server
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: slotengine
+      POSTGRES_USER: slotengine
+      POSTGRES_PASSWORD: slotengine
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  pg_data:
