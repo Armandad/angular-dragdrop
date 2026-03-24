@@ -1,0 +1,298 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Slot Engine Game Server API",
+    "version": "1.0.0",
+    "description": "Production-grade EGT-style slot game engine API"
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Development" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Server is running",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string" } } } } }
+          }
+        }
+      }
+    },
+    "/api/games": {
+      "get": {
+        "summary": "List available games",
+        "responses": {
+          "200": {
+            "description": "Game list",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "games": { "type": "array", "items": { "$ref": "#/components/schemas/GameConfig" } } } } } }
+          }
+        }
+      }
+    },
+    "/api/session": {
+      "post": {
+        "summary": "Create a new player session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["playerId", "gameId"],
+                "properties": {
+                  "playerId": { "type": "string" },
+                  "gameId": { "type": "string" },
+                  "rtpProfile": { "type": "integer", "default": 96 },
+                  "initialBalance": { "type": "integer", "default": 10000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Session created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GameSession" } } } },
+          "404": { "description": "Game not found" }
+        }
+      }
+    },
+    "/api/session/{sessionId}": {
+      "get": {
+        "summary": "Get session state",
+        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Session state", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GameSession" } } } },
+          "404": { "description": "Session not found" }
+        }
+      }
+    },
+    "/api/spin": {
+      "post": {
+        "summary": "Execute a spin",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "betPerLine", "activeLines"],
+                "properties": {
+                  "sessionId": { "type": "string", "format": "uuid" },
+                  "betPerLine": { "type": "integer", "minimum": 1 },
+                  "activeLines": { "type": "integer", "minimum": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Spin result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SpinResponse" } } } },
+          "400": { "description": "Invalid state or insufficient balance" }
+        }
+      }
+    },
+    "/api/gamble": {
+      "post": {
+        "summary": "Gamble (double-up) round",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "choice"],
+                "properties": {
+                  "sessionId": { "type": "string", "format": "uuid" },
+                  "choice": { "type": "string", "enum": ["red", "black"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Gamble result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GambleResponse" } } } },
+          "400": { "description": "Invalid state or max attempts reached" }
+        }
+      }
+    },
+    "/api/collect": {
+      "post": {
+        "summary": "Collect winnings",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId"],
+                "properties": {
+                  "sessionId": { "type": "string", "format": "uuid" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Collected", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CollectResponse" } } } },
+          "400": { "description": "Nothing to collect" }
+        }
+      }
+    },
+    "/api/audit/stats": {
+      "get": {
+        "summary": "Get RTP audit statistics",
+        "responses": {
+          "200": {
+            "description": "Audit stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalRounds": { "type": "integer" },
+                    "totalBet": { "type": "integer" },
+                    "totalWin": { "type": "integer" },
+                    "rtp": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregator/authenticate": {
+      "post": {
+        "summary": "Authenticate player via aggregator",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AggregatorAuthRequest" } } } },
+        "responses": { "200": { "description": "Authenticated" } }
+      }
+    },
+    "/aggregator/balance": {
+      "post": {
+        "summary": "Get player balance via aggregator",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AggregatorBalanceRequest" } } } },
+        "responses": { "200": { "description": "Balance returned" } }
+      }
+    },
+    "/aggregator/bet": {
+      "post": {
+        "summary": "Place bet via aggregator wallet",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AggregatorBetRequest" } } } },
+        "responses": { "200": { "description": "Bet placed" } }
+      }
+    },
+    "/aggregator/win": {
+      "post": {
+        "summary": "Credit win via aggregator wallet",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AggregatorWinRequest" } } } },
+        "responses": { "200": { "description": "Win credited" } }
+      }
+    },
+    "/aggregator/rollback": {
+      "post": {
+        "summary": "Rollback transaction via aggregator",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AggregatorRollbackRequest" } } } },
+        "responses": { "200": { "description": "Rolled back" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GameConfig": {
+        "type": "object",
+        "properties": {
+          "gameId": { "type": "string" },
+          "name": { "type": "string" },
+          "reelCount": { "type": "integer" },
+          "rowCount": { "type": "integer" },
+          "paylineCount": { "type": "integer" },
+          "denominations": { "type": "array", "items": { "type": "integer" } },
+          "maxBetLines": { "type": "integer" }
+        }
+      },
+      "GameSession": {
+        "type": "object",
+        "properties": {
+          "sessionId": { "type": "string", "format": "uuid" },
+          "playerId": { "type": "string" },
+          "gameId": { "type": "string" },
+          "state": { "type": "string", "enum": ["IDLE", "SPINNING", "EVALUATING", "AWAITING_COLLECT", "GAMBLE", "FREE_SPINS", "COLLECTED"] },
+          "balance": { "type": "integer" },
+          "currentWin": { "type": "integer" },
+          "freeSpinsRemaining": { "type": "integer" }
+        }
+      },
+      "SpinResponse": {
+        "type": "object",
+        "properties": {
+          "roundId": { "type": "string", "format": "uuid" },
+          "result": { "$ref": "#/components/schemas/SpinResult" },
+          "balance": { "type": "integer" },
+          "state": { "type": "string" },
+          "freeSpinsRemaining": { "type": "integer" }
+        }
+      },
+      "SpinResult": {
+        "type": "object",
+        "properties": {
+          "window": { "type": "array", "items": { "type": "array", "items": { "type": "integer" } } },
+          "winLines": { "type": "array", "items": { "$ref": "#/components/schemas/WinLine" } },
+          "scatterWins": { "type": "array" },
+          "totalWin": { "type": "integer" },
+          "freeSpinsAwarded": { "type": "integer" }
+        }
+      },
+      "WinLine": {
+        "type": "object",
+        "properties": {
+          "lineIndex": { "type": "integer" },
+          "symbolId": { "type": "integer" },
+          "count": { "type": "integer" },
+          "payout": { "type": "integer" },
+          "positions": { "type": "array", "items": { "type": "object", "properties": { "reel": { "type": "integer" }, "row": { "type": "integer" } } } }
+        }
+      },
+      "GambleResponse": {
+        "type": "object",
+        "properties": {
+          "card": { "type": "object", "properties": { "suit": { "type": "string" }, "value": { "type": "integer" }, "color": { "type": "string" } } },
+          "won": { "type": "boolean" },
+          "winAmount": { "type": "integer" },
+          "balance": { "type": "integer" },
+          "state": { "type": "string" },
+          "gambleAttemptsRemaining": { "type": "integer" }
+        }
+      },
+      "CollectResponse": {
+        "type": "object",
+        "properties": {
+          "collected": { "type": "integer" },
+          "balance": { "type": "integer" },
+          "state": { "type": "string" }
+        }
+      },
+      "AggregatorAuthRequest": {
+        "type": "object",
+        "properties": { "token": { "type": "string" }, "gameId": { "type": "string" }, "currency": { "type": "string" }, "language": { "type": "string" } }
+      },
+      "AggregatorBalanceRequest": {
+        "type": "object",
+        "properties": { "playerId": { "type": "string" }, "currency": { "type": "string" } }
+      },
+      "AggregatorBetRequest": {
+        "type": "object",
+        "properties": { "playerId": { "type": "string" }, "roundId": { "type": "string" }, "amount": { "type": "integer" }, "currency": { "type": "string" }, "idempotencyKey": { "type": "string" } }
+      },
+      "AggregatorWinRequest": {
+        "type": "object",
+        "properties": { "playerId": { "type": "string" }, "roundId": { "type": "string" }, "amount": { "type": "integer" }, "currency": { "type": "string" }, "idempotencyKey": { "type": "string" } }
+      },
+      "AggregatorRollbackRequest": {
+        "type": "object",
+        "properties": { "playerId": { "type": "string" }, "roundId": { "type": "string" }, "idempotencyKey": { "type": "string" } }
+      }
+    }
+  }
+}

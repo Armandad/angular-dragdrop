@@ -156,12 +156,28 @@ async function main(): Promise<void> {
   console.log('Running simulation...');
   const startTime = performance.now();
 
-  const rng = args.seed !== undefined ? new SeededRNG(args.seed) : new FortunaRNG();
+  let result: SimulationResult;
 
-  const result = runSimulation(simConfig, rng, (completed, total) => {
-    const pct = ((completed / total) * 100).toFixed(1);
-    process.stdout.write(`\r  Progress: ${pct}%`);
-  });
+  if (args.workers > 1) {
+    // Parallel simulation using worker threads
+    const { runParallelSimulation } = await import('./parallel-runner.js');
+    result = await runParallelSimulation(
+      simConfig,
+      args.workers,
+      args.seed,
+      (completed, total) => {
+        const pct = ((completed / total) * 100).toFixed(1);
+        process.stdout.write(`\r  Progress: ${pct}%`);
+      },
+    );
+  } else {
+    // Single-threaded simulation
+    const rng = args.seed !== undefined ? new SeededRNG(args.seed) : new FortunaRNG();
+    result = runSimulation(simConfig, rng, (completed, total) => {
+      const pct = ((completed / total) * 100).toFixed(1);
+      process.stdout.write(`\r  Progress: ${pct}%`);
+    });
+  }
 
   const elapsed = performance.now() - startTime;
   console.log('\r  Progress: 100.0%');

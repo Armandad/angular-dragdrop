@@ -1,0 +1,29 @@
+{
+  "gameId": "extra-stars",
+  "name": "Extra Stars",
+  "reelCount": 5,
+  "rowCount": 3,
+  "paylineCount": 10,
+  "denominations": [1, 2, 5, 10, 20, 50, 100],
+  "defaultDenomination": 1,
+  "minBetLines": 1,
+  "maxBetLines": 10,
+  "features": {
+    "freeSpins": {
+      "triggerSymbol": 0,
+      "triggerCount": 3,
+      "spinsAwarded": 10,
+      "multiplier": 2,
+      "retrigger": true,
+      "maxRetriggers": 5
+    },
+    "gamble": {
+      "maxAttempts": 5,
+      "multiplier": 2,
+      "maxWinMultiple": 5000
+    },
+    "expandingWilds": true,
+    "scatterPay": true
+  },
+  "rtpTargets": [95, 96, 97]
+}

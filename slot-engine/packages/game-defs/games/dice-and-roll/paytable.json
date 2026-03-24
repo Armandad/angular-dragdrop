@@ -1,0 +1,28 @@
+{
+  "symbols": [
+    { "id": 0, "name": "Dice", "type": "scatter" },
+    { "id": 1, "name": "Wild", "type": "wild" },
+    { "id": 2, "name": "Diamond", "type": "regular" },
+    { "id": 3, "name": "Seven", "type": "regular" },
+    { "id": 4, "name": "BAR", "type": "regular" },
+    { "id": 5, "name": "Bell", "type": "regular" },
+    { "id": 6, "name": "Grape", "type": "regular" },
+    { "id": 7, "name": "Orange", "type": "regular" },
+    { "id": 8, "name": "Lemon", "type": "regular" },
+    { "id": 9, "name": "Cherry", "type": "regular" }
+  ],
+  "pays": {
+    "1": { "3": 15, "4": 75, "5": 300 },
+    "2": { "3": 80, "4": 320, "5": 1600 },
+    "3": { "3": 40, "4": 160, "5": 800 },
+    "4": { "3": 20, "4": 80, "5": 400 },
+    "5": { "3": 15, "4": 60, "5": 200 },
+    "6": { "3": 10, "4": 40, "5": 150 },
+    "7": { "3": 10, "4": 40, "5": 150 },
+    "8": { "3": 5, "4": 20, "5": 100 },
+    "9": { "2": 2, "3": 5, "4": 25, "5": 100 }
+  },
+  "scatterPays": {
+    "0": { "3": 5, "4": 20, "5": 100 }
+  }
+}
